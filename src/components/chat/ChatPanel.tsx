@@ -8,8 +8,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useConfigStore } from '../../stores/configStore';
 import { useVoiceInput } from '../../hooks/useVoiceInput';
-import { sendMessageToOpenAI, executeConfigChanges } from '../../services/openai';
-import { validateConfiguration, getValidationExplanation } from '../../config/constraints';
+import { sendMessage, executeFunctionCall, type GeminiResponse } from '../../services/gemini';
 
 // =============================================================================
 // ICONS
@@ -47,11 +46,13 @@ export function ChatPanel() {
     config,
     updateConfig,
     setLoading,
+    setCameraPosition,
+    toggleValidationOverlay,
     ui,
   } = useConfigStore();
 
   // Conversation history for context
-  const conversationHistory = useRef<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
+  const conversationHistory = useRef<Array<{ role: 'user' | 'model'; content: string }>>([]);
 
   // Voice input hook
   const {
@@ -86,36 +87,38 @@ export function ChatPanel() {
     conversationHistory.current.push({ role: 'user', content: text });
 
     try {
-      // Get AI response from OpenAI
-      const response = await sendMessageToOpenAI(
+      // Get AI response
+      const response: GeminiResponse = await sendMessage(
         text,
         config,
         conversationHistory.current
       );
 
-      // Execute configuration changes
-      if (response.configChanges && response.configChanges.length > 0) {
-        const configUpdate = executeConfigChanges(response.configChanges, config);
+      // Execute any function calls
+      let configUpdate: Partial<typeof config> = {};
 
-        // Apply the changes
-        if (Object.keys(configUpdate).length > 0) {
-          updateConfig(configUpdate);
+      for (const fc of response.functionCalls) {
+        const result = executeFunctionCall(fc.name, fc.args, config);
 
-          // Validate the new configuration
-          const newConfig = { ...config, ...configUpdate };
-          const validation = validateConfiguration(newConfig);
-
-          // If there are validation issues, append them to the message
-          if (!validation.isValid) {
-            const validationMsg = '\n\n⚠️ **Hinweis:** ' + getValidationExplanation(validation);
-            response.message += validationMsg;
-          }
+        if (result.configUpdate) {
+          configUpdate = { ...configUpdate, ...result.configUpdate };
         }
+        if (result.cameraPosition) {
+          setCameraPosition(result.cameraPosition as any);
+        }
+        if (result.showValidation) {
+          toggleValidationOverlay();
+        }
+      }
+
+      // Apply config updates
+      if (Object.keys(configUpdate).length > 0) {
+        updateConfig(configUpdate);
       }
 
       // Add assistant message
       addMessage({ role: 'assistant', content: response.message });
-      conversationHistory.current.push({ role: 'assistant', content: response.message });
+      conversationHistory.current.push({ role: 'model', content: response.message });
 
     } catch (error) {
       console.error('Chat error:', error);
@@ -126,7 +129,7 @@ export function ChatPanel() {
     } finally {
       setLoading(false);
     }
-  }, [input, config, ui.isLoading, addMessage, setLoading, updateConfig]);
+  }, [input, config, ui.isLoading, addMessage, setLoading, updateConfig, setCameraPosition, toggleValidationOverlay]);
 
   // Handle form submit
   const onFormSubmit = (e: React.FormEvent) => {
