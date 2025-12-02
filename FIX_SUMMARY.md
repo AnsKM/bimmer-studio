@@ -2,7 +2,7 @@
 
 ## 🎯 Problem
 
-The BMW M5 configurator's OpenAI integration was not working properly. The chat was behaving like an algorithmic robot instead of using GPT-4o's function calling capabilities. When users typed prompts like "change the color" or "show me blue colors," the car configuration was not being updated.
+The BMW M5 configurator's OpenAI integration was not working properly. The chat was behaving like an algorithmic robot instead of using GPT-5.1's function calling capabilities. When users typed prompts like "change the color" or "show me blue colors," the car configuration was not being updated.
 
 ## 🔍 Root Causes Identified
 
@@ -97,7 +97,7 @@ catch (error: any) {
 
 #### D. Fallback Response Generation
 ```typescript
-// Handle cases where GPT-4o returns function calls without message content
+// Handle cases where GPT-5.1 returns function calls without message content
 if (!responseText && functionCalls.length > 0) {
   const functionName = functionCalls[0].name;
   if (functionName === 'change_color') {
@@ -158,7 +158,7 @@ User Input → ChatPanel
            ↓
 OpenAI Service (with logging)
            ↓
-GPT-4o API (with tools/functions)
+GPT-5.1 API (with tools/functions)
            ↓
 Function Calls Extracted
            ↓
@@ -187,7 +187,7 @@ The fix maintains all M5-specific validation:
 - ✅ Ceramic brakes require performance package
 - ✅ Frozen colors are M5-exclusive
 
-When invalid configurations are requested, GPT-4o explains:
+When invalid configurations are requested, GPT-5.1 explains:
 1. **WHY** it's not possible
 2. The **4 main M5 benefits**
 3. **Valid alternatives**
@@ -219,7 +219,7 @@ When invalid configurations are requested, GPT-4o explains:
 ```
 User: "change the color to Sapphire Black"
 ↓
-GPT-4o processes with full context
+GPT-5.1 processes with full context
 ↓
 Calls change_color({ colorId: 'sapphire-black' })
 ↓
@@ -242,7 +242,7 @@ Car updates with template response
 ### API Costs
 - **Per message:** ~$0.01-0.02
 - **Per 100 messages:** ~$1-2
-- **Model:** GPT-4o (`gpt-4o`)
+- **Model:** GPT-5.1 (`gpt-5.1`)
 - **Tokens:** ~500-800 per turn
 
 ### Response Times
@@ -283,7 +283,7 @@ npm run test:openai
 
 Verifies:
 - ✅ API key is valid
-- ✅ GPT-4o connection works
+- ✅ GPT-5.1 connection works
 - ✅ Function calling is operational
 - ✅ Error handling works
 - ✅ Response format is correct
@@ -294,7 +294,7 @@ Open browser DevTools (F12) and watch for:
 
 **✅ Success Indicators:**
 ```
-📤 Sending request to OpenAI GPT-4o with function calling...
+📤 Sending request to OpenAI GPT-5.1 with function calling...
 📥 Received response from OpenAI
 🔧 Processing 1 function call(s)...
   ✅ Function: change_color { colorId: 'sapphire-black' }
@@ -380,7 +380,7 @@ Before considering this fixed, verify:
 
 ## 🎉 Result
 
-**The BMW M5 configurator now has a fully functional OpenAI GPT-4o integration with proper function calling!**
+**The BMW M5 configurator now has a fully functional OpenAI GPT-5.1 integration with proper function calling!**
 
 Users can:
 - ✅ Use natural language to configure their car

@@ -181,13 +181,13 @@ function CameraButtons() {
   ] as const;
 
   return (
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3">
       {buttons.map((btn) => (
         <button
           key={btn.id}
           onClick={() => setCameraPosition(btn.id)}
           className={`
-            px-4 py-2 rounded-lg font-body text-sm transition-all duration-200
+            px-5 py-3 rounded-lg font-body text-sm transition-all duration-200
             ${currentPosition === btn.id
               ? 'bg-bmw-blue text-white glow-blue'
               : 'glass text-obsidian-200 hover:bg-obsidian-700'

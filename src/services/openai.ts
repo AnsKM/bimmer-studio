@@ -1,7 +1,7 @@
 /**
  * OpenAI Service for BMW M5 Configuration
  *
- * Uses GPT-4o with function calling to handle car configuration
+ * Uses GPT-5.1 with function calling to handle car configuration
  * and provide intelligent suggestions with validation
  */
 
@@ -243,11 +243,11 @@ Wenn der Kunde etwas anfragt, das nicht für den M5 verfügbar ist, erkläre:
       { role: 'user', content: configContext + '\n\nKunde: ' + userMessage },
     ];
 
-    console.log('📤 Sending request to OpenAI GPT-4o with function calling...');
+    console.log('📤 Sending request to OpenAI GPT-5.1 with function calling...');
 
     // Call OpenAI with function calling
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-5.1',
       messages,
       tools: CONFIGURATION_FUNCTIONS,
       tool_choice: 'auto',

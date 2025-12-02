@@ -1,7 +1,7 @@
 # OpenAI Integration Setup Guide
 
 ## Problem Summary
-The BMW M5 configurator's OpenAI integration wasn't working because the API key was not configured. The system was falling back to demo mode instead of using GPT-4o's function calling capabilities.
+The BMW M5 configurator's OpenAI integration wasn't working because the API key was not configured. The system was falling back to demo mode instead of using GPT-5.1's function calling capabilities.
 
 ## What Was Fixed
 
@@ -12,7 +12,7 @@ The BMW M5 configurator's OpenAI integration wasn't working because the API key 
 
 ### 2. Enhanced Function Calling
 - Improved logging to show when functions are being called
-- Added fallback response generation when GPT-4o returns function calls without message content
+- Added fallback response generation when GPT-5.1 returns function calls without message content
 - Enhanced error handling with specific error type detection (401, 429, 500)
 
 ### 3. Improved Demo Mode
@@ -63,7 +63,7 @@ The app should now be running at `http://localhost:5173`
 When the OpenAI integration is working, you'll see these logs in the browser console:
 
 ```
-📤 Sending request to OpenAI GPT-4o with function calling...
+📤 Sending request to OpenAI GPT-5.1 with function calling...
 📥 Received response from OpenAI
 🔧 Processing 1 function call(s)...
   ✅ Function: change_color { colorId: 'sapphire-black' }
@@ -106,14 +106,14 @@ Try these prompts to verify the integration:
 User types: "change the color to blue"
 
 ### 2. OpenAI Processing
-The message is sent to GPT-4o with:
+The message is sent to GPT-5.1 with:
 - System prompt (explaining the M5 configurator role)
 - Current configuration context
 - Available functions (change_color, change_wheels, etc.)
 - Conversation history
 
 ### 3. Function Call Response
-GPT-4o responds with:
+GPT-5.1 responds with:
 ```json
 {
   "message": "Ich ändere die Farbe auf Portimao Blau Metallic.",
@@ -140,7 +140,7 @@ The car configuration is updated with the new color, and the 3D model reflects t
 
 ## Available Functions
 
-The following functions are available to GPT-4o:
+The following functions are available to GPT-5.1:
 
 1. **change_color** - Changes the car color
    - Parameters: `colorId` (string)
@@ -177,7 +177,7 @@ The M5 has specific constraints:
 - ✅ Ceramic brakes require a performance package
 - ✅ Frozen paint colors are M5-exclusive
 
-When users request invalid configurations, GPT-4o will:
+When users request invalid configurations, GPT-5.1 will:
 1. Explain WHY it's not possible
 2. List the 4 main M5 benefits
 3. Suggest valid alternatives
@@ -185,7 +185,7 @@ When users request invalid configurations, GPT-4o will:
 ## Troubleshooting
 
 ### Issue: "No function calls in response"
-**Cause:** GPT-4o didn't recognize the intent as requiring a configuration change.
+**Cause:** GPT-5.1 didn't recognize the intent as requiring a configuration change.
 **Solution:** Be more specific in your prompt (e.g., "change the color to blue" instead of "I like blue")
 
 ### Issue: "Authentication error - check your API key"
@@ -205,7 +205,7 @@ When users request invalid configurations, GPT-4o will:
 
 ## Cost Estimation
 
-GPT-4o pricing (as of 2024):
+GPT-5.1 pricing (as of 2024):
 - Input: $2.50 per 1M tokens
 - Output: $10.00 per 1M tokens
 

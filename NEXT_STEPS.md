@@ -74,7 +74,7 @@ The app will start at: **http://localhost:5173**
 4. Watch the console logs:
 
 ```
-📤 Sending request to OpenAI GPT-4o with function calling...
+📤 Sending request to OpenAI GPT-5.1 with function calling...
 📥 Received response from OpenAI
 🔧 Processing 1 function call(s)...
   ✅ Function: change_color { colorId: 'sapphire-black' }
@@ -90,7 +90,7 @@ The app will start at: **http://localhost:5173**
 
 **Console Logs:**
 ```
-📤 Sending request to OpenAI GPT-4o with function calling...
+📤 Sending request to OpenAI GPT-5.1 with function calling...
 📥 Received response from OpenAI
 🔧 Processing 1 function call(s)...
   ✅ Function: change_color { colorId: 'portimao-blue' }
@@ -264,7 +264,7 @@ Verfügbare Alternativen:
 
 ### OpenAI Costs
 
-**GPT-4o Model:**
+**GPT-5.1 Model:**
 - Input: $2.50 per 1M tokens
 - Output: $10.00 per 1M tokens
 
@@ -322,7 +322,7 @@ Before you start using the app, make sure:
 
 ## 🎉 You're All Set!
 
-Your BMW M5 configurator now has a fully functional AI assistant powered by GPT-4o!
+Your BMW M5 configurator now has a fully functional AI assistant powered by GPT-5.1!
 
 **Try it now:**
 

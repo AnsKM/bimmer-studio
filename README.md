@@ -1,10 +1,10 @@
 # BMW M5 AI Configurator 🏎️
 
-An intelligent 3D car configurator for the BMW M5, powered by OpenAI GPT-4o and React Three Fiber.
+An intelligent 3D car configurator for the BMW M5, powered by OpenAI GPT-5.1 and React Three Fiber.
 
 ## Features ✨
 
-- **AI-Powered Configuration** - Chat with GPT-4o to configure your BMW M5
+- **AI-Powered Configuration** - Chat with GPT-5.1 to configure your BMW M5
 - **3D Visualization** - Real-time 3D rendering with React Three Fiber
 - **Voice Input** - Configure your car using voice commands
 - **Intelligent Validation** - Automatic validation with M5-specific constraints
@@ -12,7 +12,7 @@ An intelligent 3D car configurator for the BMW M5, powered by OpenAI GPT-4o and 
 
 ## AI Capabilities 🤖
 
-The configurator uses **OpenAI GPT-4o** with function calling to:
+The configurator uses **OpenAI GPT-5.1** with function calling to:
 - Change colors, wheels, interior, and performance packages
 - Validate configurations against M5 requirements
 - Explain why certain configurations aren't available
@@ -63,7 +63,7 @@ When you request something not compatible with the M5 (e.g., standard wheels), t
 
 - **Frontend Framework**: React 19 + TypeScript
 - **3D Graphics**: Three.js + React Three Fiber
-- **AI Integration**: OpenAI GPT-4o (gpt-4o model)
+- **AI Integration**: OpenAI GPT-5.1 (gpt-5.1 model)
 - **State Management**: Zustand
 - **Animation**: Framer Motion
 - **Styling**: Tailwind CSS
@@ -89,7 +89,7 @@ The app uses OpenAI's function calling to handle user requests:
 ### Configuration Flow
 
 1. User sends a message via chat or voice
-2. OpenAI GPT-4o processes the request
+2. OpenAI GPT-5.1 processes the request
 3. AI executes function calls to update configuration
 4. Validation system checks if configuration is valid for M5
 5. If invalid, AI explains why and suggests alternatives
@@ -134,4 +134,4 @@ MIT
 
 ## Credits 👏
 
-Built with ❤️ using OpenAI GPT-4o, React, and Three.js
+Built with ❤️ using OpenAI GPT-5.1, React, and Three.js

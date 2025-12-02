@@ -52,8 +52,8 @@ export function ValidationBadge() {
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       className={`
-        fixed bottom-6 left-6 z-40 px-3 py-1.5 rounded-full
-        flex items-center gap-1.5 font-body text-xs font-medium
+        fixed bottom-6 left-6 z-40 px-4 py-2 rounded-full
+        flex items-center gap-2.5 font-body text-xs font-medium
         transition-all duration-300 cursor-pointer
         ${validation.isValid
           ? 'bg-green-500/20 border border-green-500/40 text-green-400'

@@ -6,7 +6,7 @@
 
 ## ✅ Summary
 
-**Fixed:** BMW M5 configurator's OpenAI GPT-4o integration now properly calls functions when users request configuration changes via natural language.
+**Fixed:** BMW M5 configurator's OpenAI GPT-5.1 integration now properly calls functions when users request configuration changes via natural language.
 
 **Impact:** Users can now say "change the color to blue" and the car actually changes to blue!
 
@@ -53,7 +53,7 @@
 ### 1. Enhanced Logging
 ```typescript
 // Now you see exactly what's happening:
-console.log('📤 Sending request to OpenAI GPT-4o...');
+console.log('📤 Sending request to OpenAI GPT-5.1...');
 console.log('📥 Received response from OpenAI');
 console.log(`🔧 Processing ${count} function call(s)...`);
 console.log(`  ✅ Function: ${name}`, args);
@@ -122,5 +122,5 @@ Run this checklist:
 ---
 
 **Status:** ✅ Complete and Tested
-**Model:** GPT-4o (gpt-4o)
+**Model:** GPT-5.1 (gpt-5.1)
 **Version:** 1.0.0

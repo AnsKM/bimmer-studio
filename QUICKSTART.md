@@ -2,10 +2,10 @@
 
 ## ✨ What's Been Fixed
 
-The BMW M5 configurator now has **fully functional OpenAI GPT-4o integration** with proper function calling! Users can now use natural language to configure their car, and the AI will intelligently call the appropriate functions to update the configuration in real-time.
+The BMW M5 configurator now has **fully functional OpenAI GPT-5.1 integration** with proper function calling! Users can now use natural language to configure their car, and the AI will intelligently call the appropriate functions to update the configuration in real-time.
 
 ### Key Improvements:
-- ✅ **Proper Function Calling**: GPT-4o now correctly identifies user intents and calls configuration functions
+- ✅ **Proper Function Calling**: GPT-5.1 now correctly identifies user intents and calls configuration functions
 - ✅ **Enhanced Logging**: Detailed console logs show exactly what's happening
 - ✅ **Better Error Handling**: Clear error messages for API issues
 - ✅ **Improved Demo Mode**: Better pattern matching when API key is not configured
@@ -42,7 +42,7 @@ npm run test:openai
 
 **✅ Working (with API key):**
 ```
-📤 Sending request to OpenAI GPT-4o with function calling...
+📤 Sending request to OpenAI GPT-5.1 with function calling...
 📥 Received response from OpenAI
 🔧 Processing 1 function call(s)...
   ✅ Function: change_color { colorId: 'sapphire-black' }
@@ -95,13 +95,13 @@ User: "change the color to blue"
 ```
 
 ### 2. OpenAI Processing
-The message is sent to GPT-4o with:
+The message is sent to GPT-5.1 with:
 - System prompt (BMW M5 configurator role)
 - Current configuration state
 - Available functions
 - Conversation history
 
-### 3. GPT-4o Response
+### 3. GPT-5.1 Response
 ```json
 {
   "message": "Ich ändere die Farbe auf Portimao Blau Metallic.",
@@ -175,7 +175,7 @@ Verfügbare Alternativen:
 
 ## 💰 Cost Information
 
-**OpenAI GPT-4o Pricing:**
+**OpenAI GPT-5.1 Pricing:**
 - Input: $2.50 per 1M tokens
 - Output: $10.00 per 1M tokens
 

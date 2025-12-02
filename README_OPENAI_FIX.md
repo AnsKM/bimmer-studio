@@ -2,7 +2,7 @@
 
 ## ✅ What's Been Fixed
 
-The BMW M5 configurator's OpenAI integration is now **fully functional**! Users can configure their car using natural language, and GPT-4o will intelligently call the appropriate functions to update the configuration in real-time.
+The BMW M5 configurator's OpenAI integration is now **fully functional**! Users can configure their car using natural language, and GPT-5.1 will intelligently call the appropriate functions to update the configuration in real-time.
 
 ### Before (Not Working)
 ```
@@ -14,7 +14,7 @@ Car: [No change]
 ### After (Working!)
 ```
 User: "change the color to blue"
-GPT-4o: Calls change_color({ colorId: 'portimao-blue' })
+GPT-5.1: Calls change_color({ colorId: 'portimao-blue' })
 Bot: "Ich ändere die Farbe auf Portimao Blau Metallic."
 Car: [Changes to blue instantly!] ✨
 ```
@@ -126,7 +126,7 @@ Verfügbare Alternativen: [M Sport wheels listed]
 
 **✅ Working:**
 ```
-📤 Sending request to OpenAI GPT-4o with function calling...
+📤 Sending request to OpenAI GPT-5.1 with function calling...
 📥 Received response from OpenAI
 🔧 Processing 1 function call(s)...
   ✅ Function: change_color { colorId: 'sapphire-black' }
@@ -145,7 +145,7 @@ Verfügbare Alternativen: [M Sport wheels listed]
 ### With OpenAI API
 - Per message: ~$0.01-0.02
 - Per 100 messages: ~$1-2
-- Model: GPT-4o
+- Model: GPT-5.1
 
 ### Without API Key (Demo Mode)
 - Cost: **$0 (Free!)**
@@ -222,7 +222,7 @@ npm run test:openai
 ## 📦 What's Included
 
 ### ✨ Features
-- ✅ GPT-4o function calling
+- ✅ GPT-5.1 function calling
 - ✅ Natural language understanding
 - ✅ Real-time config updates
 - ✅ M5 validation with benefits
@@ -246,7 +246,7 @@ npm run test:openai
 - ✅ Ceramic brakes need performance package
 - ✅ Frozen colors are M5-exclusive
 
-When users request invalid configs, GPT-4o explains WHY and suggests alternatives!
+When users request invalid configs, GPT-5.1 explains WHY and suggests alternatives!
 
 ---
 
@@ -355,7 +355,7 @@ AI:   [Calls validate_configuration()]
 
 ## 🎉 Ready to Go!
 
-Your BMW M5 configurator is now powered by GPT-4o with full function calling support!
+Your BMW M5 configurator is now powered by GPT-5.1 with full function calling support!
 
 ```bash
 npm run dev
@@ -370,4 +370,4 @@ npm run dev
 **Version:** 1.0.0
 **Date:** December 2, 2025
 **Status:** ✅ Complete and Tested
-**Model:** GPT-4o (`gpt-4o`)
+**Model:** GPT-5.1 (`gpt-5.1`)
