@@ -1,73 +1,137 @@
-# React + TypeScript + Vite
+# BMW M5 AI Configurator 🏎️
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An intelligent 3D car configurator for the BMW M5, powered by OpenAI GPT-4o and React Three Fiber.
 
-Currently, two official plugins are available:
+## Features ✨
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **AI-Powered Configuration** - Chat with GPT-4o to configure your BMW M5
+- **3D Visualization** - Real-time 3D rendering with React Three Fiber
+- **Voice Input** - Configure your car using voice commands
+- **Intelligent Validation** - Automatic validation with M5-specific constraints
+- **Smart Suggestions** - AI provides alternatives when configurations aren't compatible
 
-## React Compiler
+## AI Capabilities 🤖
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The configurator uses **OpenAI GPT-4o** with function calling to:
+- Change colors, wheels, interior, and performance packages
+- Validate configurations against M5 requirements
+- Explain why certain configurations aren't available
+- **Highlight 4 key M5 benefits** when suggesting alternatives
+- Provide camera controls for different views
 
-## Expanding the ESLint configuration
+### M5 Benefits Highlighted by AI
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+When you request something not compatible with the M5 (e.g., standard wheels), the AI explains:
+1. **625 PS V8 Twin-Turbo Motor** - Exceptional performance
+2. **M xDrive All-Wheel Drive** - Optimal traction and handling
+3. **Adaptive M Suspension** - Perfect balance between comfort and sport
+4. **Exclusive M Performance Components** - Race-track tested technology
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Setup 🚀
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+1. **Clone the repository**
+   ```bash
+   git clone <repo-url>
+   cd bmw-configurator-demo
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure API Keys**
+
+   Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+
+   Add your OpenAI API key to `.env`:
+   ```env
+   VITE_OPENAI_API_KEY=sk-your-api-key-here
+   ```
+
+   Get your API key from: [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+## Technology Stack 🛠️
+
+- **Frontend Framework**: React 19 + TypeScript
+- **3D Graphics**: Three.js + React Three Fiber
+- **AI Integration**: OpenAI GPT-4o (gpt-4o model)
+- **State Management**: Zustand
+- **Animation**: Framer Motion
+- **Styling**: Tailwind CSS
+- **Build Tool**: Vite
+
+## How It Works 🔧
+
+### AI Service Architecture
+
+The app uses OpenAI's function calling to handle user requests:
+
+```typescript
+// User: "Show me the wheels"
+// AI calls: show_wheels()
+
+// User: "Change to Sapphire Black"
+// AI calls: change_color({ colorId: 'sapphire-black' })
+
+// User: "I want standard wheels"
+// AI: Explains why not possible + shows 4 M5 benefits + suggests alternatives
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Configuration Flow
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. User sends a message via chat or voice
+2. OpenAI GPT-4o processes the request
+3. AI executes function calls to update configuration
+4. Validation system checks if configuration is valid for M5
+5. If invalid, AI explains why and suggests alternatives
+6. 3D model updates in real-time
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Key Components 📦
+
+- **`src/services/openai.ts`** - OpenAI integration with function calling
+- **`src/components/chat/ChatPanel.tsx`** - Chat interface
+- **`src/stores/configStore.ts`** - Zustand state management
+- **`src/config/constraints.ts`** - M5 validation rules
+- **`src/types/index.ts`** - TypeScript definitions
+
+## Available Commands 💬
+
+Try these in the chat:
+- "Zeig mir die Farben" (Show me the colors)
+- "Zeig mir die Felgen" (Show me the wheels)
+- "Ändere die Farbe auf Saphirschwarz" (Change color to Sapphire Black)
+- "Ich möchte Standard Felgen" (I want standard wheels - AI explains M5 benefits!)
+- "Zeig mir die Frontansicht" (Show me the front view)
+- "Prüfe die Konfiguration" (Validate configuration)
+
+## M5 Constraints 🚫
+
+The AI enforces these M5-specific rules:
+- ❌ No standard wheels (only M Sport or M Performance)
+- ❌ Competition package requires 21" wheels
+- ❌ Ceramic brakes require a performance package
+- ✅ Frozen paint is exclusive to M5
+
+## Building for Production 🏗️
+
+```bash
+npm run build
+npm run preview
 ```
+
+## License 📄
+
+MIT
+
+## Credits 👏
+
+Built with ❤️ using OpenAI GPT-4o, React, and Three.js

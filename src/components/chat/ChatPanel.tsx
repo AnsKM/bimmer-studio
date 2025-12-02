@@ -8,7 +8,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useConfigStore } from '../../stores/configStore';
 import { useVoiceInput } from '../../hooks/useVoiceInput';
-import { sendMessage, executeFunctionCall, type GeminiResponse } from '../../services/gemini';
+import { sendMessageToOpenAI, executeOpenAIFunctionCall, type OpenAIResponse } from '../../services/openai';
 
 // =============================================================================
 // ICONS
@@ -51,8 +51,8 @@ export function ChatPanel() {
     ui,
   } = useConfigStore();
 
-  // Conversation history for context
-  const conversationHistory = useRef<Array<{ role: 'user' | 'model'; content: string }>>([]);
+  // Conversation history for context (OpenAI uses 'user' and 'assistant')
+  const conversationHistory = useRef<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
 
   // Voice input hook
   const {
@@ -87,8 +87,8 @@ export function ChatPanel() {
     conversationHistory.current.push({ role: 'user', content: text });
 
     try {
-      // Get AI response
-      const response: GeminiResponse = await sendMessage(
+      // Get AI response from OpenAI
+      const response: OpenAIResponse = await sendMessageToOpenAI(
         text,
         config,
         conversationHistory.current
@@ -98,7 +98,7 @@ export function ChatPanel() {
       let configUpdate: Partial<typeof config> = {};
 
       for (const fc of response.functionCalls) {
-        const result = executeFunctionCall(fc.name, fc.args, config);
+        const result = executeOpenAIFunctionCall(fc.name, fc.args, config);
 
         if (result.configUpdate) {
           configUpdate = { ...configUpdate, ...result.configUpdate };
@@ -118,7 +118,7 @@ export function ChatPanel() {
 
       // Add assistant message
       addMessage({ role: 'assistant', content: response.message });
-      conversationHistory.current.push({ role: 'model', content: response.message });
+      conversationHistory.current.push({ role: 'assistant', content: response.message });
 
     } catch (error) {
       console.error('Chat error:', error);
