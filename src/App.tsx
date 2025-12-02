@@ -15,7 +15,7 @@ import { ValidationBadge, ValidationOverlay } from './components/ui/ValidationOv
 
 function App() {
   return (
-    <div className="relative w-screen h-screen bg-obsidian-950 overflow-hidden">
+    <div className="relative w-full h-screen bg-obsidian-950 overflow-hidden">
       {/* 3D Scene (background) */}
       <div className="absolute inset-0 z-0">
         <Scene />
@@ -32,7 +32,7 @@ function App() {
         </div>
 
         {/* Right Side - Chat Panel */}
-        <div className="absolute right-0 top-0 bottom-0 w-96 pointer-events-auto">
+        <div className="absolute right-0 top-0 bottom-0 w-[420px] pointer-events-auto">
           <ChatPanel />
         </div>
       </div>

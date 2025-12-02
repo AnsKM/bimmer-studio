@@ -46,7 +46,7 @@ export function Header() {
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="absolute top-0 left-0 right-96 z-30 px-4 py-3 flex items-center justify-between"
+      className="absolute top-0 left-0 right-[420px] z-30 px-4 py-3 flex items-center justify-between"
     >
       {/* Left: Logo and Title */}
       <div className="flex items-center gap-3">
