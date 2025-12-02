@@ -168,10 +168,10 @@ export function ChatPanel() {
             >
               <div
                 className={`
-                  max-w-[85%] px-4 py-3 rounded-2xl font-body text-sm
+                  max-w-[85%] px-5 py-4 rounded-2xl font-body text-sm leading-relaxed
                   ${message.role === 'user'
-                    ? 'bg-bmw-blue text-white rounded-br-md'
-                    : 'bg-obsidian-800 text-obsidian-100 rounded-bl-md border border-white/5'
+                    ? 'bg-bmw-blue text-white rounded-br-md shadow-lg shadow-bmw-blue/20'
+                    : 'bg-obsidian-800 text-obsidian-100 rounded-bl-md border border-white/10 shadow-lg shadow-black/20'
                   }
                 `}
               >
@@ -188,8 +188,8 @@ export function ChatPanel() {
             animate={{ opacity: 1 }}
             className="flex justify-start"
           >
-            <div className="bg-obsidian-800 px-4 py-3 rounded-2xl rounded-bl-md border border-white/5">
-              <div className="flex gap-1">
+            <div className="bg-obsidian-800 px-5 py-4 rounded-2xl rounded-bl-md border border-white/10 shadow-lg shadow-black/20">
+              <div className="flex gap-1.5">
                 <span className="w-2 h-2 bg-bmw-blue rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                 <span className="w-2 h-2 bg-bmw-blue rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                 <span className="w-2 h-2 bg-bmw-blue rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -215,16 +215,16 @@ export function ChatPanel() {
       </div>
 
       {/* Quick Actions */}
-      <div className="px-6 py-3 flex gap-2 overflow-x-auto">
+      <div className="px-6 py-4 flex gap-2.5 overflow-x-auto border-t border-white/5">
         {['Zeig mir die Farben', 'Felgen ändern', 'Standard Felgen'].map((action) => (
           <button
             key={action}
             onClick={() => handleSubmit(action)}
             disabled={ui.isLoading}
-            className="px-3 py-1.5 text-xs font-body text-obsidian-300 bg-obsidian-800
-                       rounded-full border border-white/10 hover:border-bmw-blue/50
-                       hover:text-obsidian-100 transition-all whitespace-nowrap
-                       disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2.5 text-xs font-medium font-body text-obsidian-300 bg-obsidian-800/50
+                       rounded-lg border border-white/10 hover:border-bmw-blue/50 hover:bg-obsidian-700
+                       hover:text-white transition-all whitespace-nowrap
+                       disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
           >
             {action}
           </button>
@@ -232,8 +232,8 @@ export function ChatPanel() {
       </div>
 
       {/* Input */}
-      <form onSubmit={onFormSubmit} className="p-6 border-t border-white/10">
-        <div className="flex gap-2">
+      <form onSubmit={onFormSubmit} className="px-6 py-5 border-t border-white/10 bg-obsidian-900/30">
+        <div className="flex gap-3">
           <div className="flex-1 relative">
             <input
               type="text"
@@ -288,36 +288,92 @@ export function ChatPanel() {
 // =============================================================================
 
 function MessageContent({ content }: { content: string }) {
-  // Simple markdown-like rendering for bold and line breaks
+  // Parse content into sections (paragraphs and lists)
   const lines = content.split('\n');
+  const sections: Array<{ type: 'text' | 'list'; content: string[] }> = [];
+
+  let currentSection: { type: 'text' | 'list'; content: string[] } | null = null;
+
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+    const isBullet = trimmed.startsWith('•') || trimmed.startsWith('-') || /^\d+\./.test(trimmed);
+
+    if (!trimmed) {
+      // Empty line - close current section
+      if (currentSection) {
+        sections.push(currentSection);
+        currentSection = null;
+      }
+      return;
+    }
+
+    if (isBullet) {
+      // Start or continue bullet list
+      if (currentSection?.type !== 'list') {
+        if (currentSection) sections.push(currentSection);
+        currentSection = { type: 'list', content: [] };
+      }
+      currentSection.content.push(trimmed.replace(/^[•\-]\s*/, '').replace(/^\d+\.\s*/, ''));
+    } else {
+      // Regular text
+      if (currentSection?.type !== 'text') {
+        if (currentSection) sections.push(currentSection);
+        currentSection = { type: 'text', content: [] };
+      }
+      currentSection.content.push(trimmed);
+    }
+  });
+
+  if (currentSection) sections.push(currentSection);
 
   return (
-    <div className="space-y-2">
-      {lines.map((line, i) => {
-        if (!line.trim()) return <br key={i} />;
-
-        // Bold text with **
-        const parts = line.split(/(\*\*.*?\*\*)/g);
+    <div className="space-y-3 leading-relaxed">
+      {sections.map((section, idx) => {
+        if (section.type === 'list') {
+          return (
+            <ul key={idx} className="space-y-2 ml-1">
+              {section.content.map((item, i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <span className="text-bmw-blue mt-1 flex-shrink-0">•</span>
+                  <span className="flex-1">
+                    <FormattedText text={item} />
+                  </span>
+                </li>
+              ))}
+            </ul>
+          );
+        }
 
         return (
-          <p key={i}>
-            {parts.map((part, j) => {
-              if (part.startsWith('**') && part.endsWith('**')) {
-                return (
-                  <strong key={j} className="font-semibold text-bmw-blue-light">
-                    {part.slice(2, -2)}
-                  </strong>
-                );
-              }
-              // Bullet points
-              if (part.startsWith('•') || part.startsWith('-')) {
-                return <span key={j} className="block pl-2">{part}</span>;
-              }
-              return part;
-            })}
-          </p>
+          <div key={idx} className="space-y-2">
+            {section.content.map((text, i) => (
+              <p key={i} className="leading-relaxed">
+                <FormattedText text={text} />
+              </p>
+            ))}
+          </div>
         );
       })}
     </div>
+  );
+}
+
+// Helper component for formatting bold text and emojis
+function FormattedText({ text }: { text: string }) {
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return (
+            <strong key={i} className="font-semibold text-white">
+              {part.slice(2, -2)}
+            </strong>
+          );
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </>
   );
 }
