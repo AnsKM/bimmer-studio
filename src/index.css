@@ -1,0 +1,175 @@
+@import "tailwindcss";
+
+/* BMW M5 Configurator Design System - "Precision Luxury" */
+
+/* Custom Theme Variables */
+@theme {
+  /* BMW Brand Colors */
+  --color-bmw-blue: #1c69d4;
+  --color-bmw-blue-dark: #0653b6;
+  --color-bmw-blue-light: #4a8fe8;
+
+  /* Obsidian Dark Palette */
+  --color-obsidian-950: #0a0a0a;
+  --color-obsidian-900: #121212;
+  --color-obsidian-800: #1a1a1a;
+  --color-obsidian-700: #262626;
+  --color-obsidian-600: #404040;
+  --color-obsidian-500: #525252;
+  --color-obsidian-400: #737373;
+  --color-obsidian-300: #a3a3a3;
+  --color-obsidian-200: #d4d4d4;
+  --color-obsidian-100: #f5f5f5;
+
+  /* Accent Colors */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-validation-block: #dc2626;
+  --color-validation-warn: #f59e0b;
+
+  /* Typography */
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Shadows */
+  --shadow-glow: 0 0 20px rgba(28, 105, 212, 0.3);
+  --shadow-glow-lg: 0 0 40px rgba(28, 105, 212, 0.4);
+
+  /* Animations */
+  --ease-premium: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-obsidian-950);
+  color: var(--color-obsidian-100);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Glass Effect Utilities */
+.glass {
+  background: rgba(18, 18, 18, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* BMW Blue Glow Effects */
+.glow-blue {
+  box-shadow: var(--shadow-glow);
+}
+
+.glow-blue-lg {
+  box-shadow: var(--shadow-glow-lg);
+}
+
+/* Validation States */
+.validation-blocked {
+  border-color: var(--color-validation-block) !important;
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.validation-warning {
+  border-color: var(--color-validation-warn) !important;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-obsidian-900);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-obsidian-600);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-obsidian-500);
+}
+
+/* Animation Classes */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(28, 105, 212, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(28, 105, 212, 0.5);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s var(--ease-premium) forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s var(--ease-premium) forwards;
+}
+
+/* Voice Recording Indicator */
+@keyframes voice-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+}
+
+.voice-recording {
+  animation: voice-pulse 1s ease-in-out infinite;
+}
