@@ -47,13 +47,11 @@ export function ChatPanel() {
     config,
     updateConfig,
     setLoading,
-    setCameraPosition,
-    toggleValidationOverlay,
     ui,
   } = useConfigStore();
 
   // Conversation history for context
-  const conversationHistory = useRef<Array<{ role: 'user' | 'model'; content: string }>>([]);
+  const conversationHistory = useRef<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
 
   // Voice input hook
   const {
