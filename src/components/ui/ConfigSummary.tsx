@@ -46,7 +46,7 @@ export function ConfigSummary() {
       </div>
 
       {/* Config Items */}
-      <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+      <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
         <ConfigItem label="Farbe">
           <ColorSwatch hex={config.color.hex} name={config.color.name} />
         </ConfigItem>
