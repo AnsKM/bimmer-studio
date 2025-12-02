@@ -116,6 +116,16 @@ body {
   background: var(--color-obsidian-500);
 }
 
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Animation Classes */
 @keyframes pulse-glow {
   0%, 100% {

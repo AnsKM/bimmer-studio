@@ -32,6 +32,18 @@ const StopIcon = () => (
   </svg>
 );
 
+const SparklesIcon = () => (
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+  </svg>
+);
+
+const LightningIcon = () => (
+  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+  </svg>
+);
+
 // =============================================================================
 // CHAT PANEL
 // =============================================================================
@@ -142,142 +154,309 @@ export function ChatPanel() {
       initial={{ x: 400, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-      className="w-[400px] h-full flex flex-col glass"
+      className="w-[420px] h-full flex flex-col glass shadow-2xl"
     >
-      {/* Header */}
-      <div className="px-6 py-5 border-b border-white/10">
-        <h2 className="text-lg font-display font-semibold text-obsidian-100">
-          KI-Assistent
-        </h2>
-        <p className="text-sm text-obsidian-400 font-body mt-1">
-          Konfigurieren Sie Ihren BMW M5
-        </p>
+      {/* Premium Header with Gradient Accent */}
+      <div className="relative px-6 py-6 border-b border-white/10">
+        {/* Subtle gradient top accent */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-bmw-blue to-transparent opacity-60" />
+
+        <div className="flex items-start gap-3">
+          {/* AI Icon with glow effect */}
+          <motion.div
+            className="mt-0.5 p-2.5 bg-gradient-to-br from-bmw-blue to-bmw-blue-dark rounded-xl shadow-lg shadow-bmw-blue/30"
+            animate={{
+              boxShadow: [
+                '0 4px 20px rgba(28, 105, 212, 0.3)',
+                '0 4px 30px rgba(28, 105, 212, 0.5)',
+                '0 4px 20px rgba(28, 105, 212, 0.3)',
+              ]
+            }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <SparklesIcon />
+          </motion.div>
+
+          <div className="flex-1">
+            <h2 className="text-xl font-display font-bold text-white tracking-tight">
+              KI-Assistent
+            </h2>
+            <p className="text-xs text-obsidian-400 font-body mt-1.5 leading-relaxed">
+              Konfigurieren Sie Ihren BMW M5 mit intelligenter Unterstützung
+            </p>
+          </div>
+        </div>
+
+        {/* Status indicator */}
+        <motion.div
+          className="absolute top-6 right-6 flex items-center gap-1.5 text-[10px] font-medium text-obsidian-500"
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <span className="w-1.5 h-1.5 bg-success rounded-full" />
+          Online
+        </motion.div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-5">
+      <div className="flex-1 overflow-y-auto p-6 space-y-4">
         <AnimatePresence mode="popLayout">
-          {messages.map((message) => (
+          {messages.map((message, index) => (
             <motion.div
               key={message.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div
+              {message.role === 'assistant' && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="flex-shrink-0 w-8 h-8 mr-3 mt-1 bg-gradient-to-br from-bmw-blue/20 to-bmw-blue-dark/20 rounded-lg flex items-center justify-center border border-bmw-blue/30"
+                >
+                  <SparklesIcon />
+                </motion.div>
+              )}
+
+              <motion.div
+                whileHover={{ scale: 1.01 }}
+                transition={{ duration: 0.2 }}
                 className={`
-                  max-w-[85%] px-5 py-4 rounded-2xl font-body text-sm leading-relaxed
+                  max-w-[80%] px-5 py-4 rounded-2xl font-body text-sm leading-relaxed
                   ${message.role === 'user'
-                    ? 'bg-bmw-blue text-white rounded-br-md shadow-lg shadow-bmw-blue/20'
-                    : 'bg-obsidian-800 text-obsidian-100 rounded-bl-md border border-white/10 shadow-lg shadow-black/20'
+                    ? 'bg-gradient-to-br from-bmw-blue to-bmw-blue-dark text-white rounded-br-md shadow-lg shadow-bmw-blue/20 border border-bmw-blue-light/20'
+                    : 'bg-obsidian-800/80 text-obsidian-100 rounded-bl-md border border-white/10 shadow-xl shadow-black/30 backdrop-blur-sm'
                   }
                 `}
               >
                 <MessageContent content={message.content} />
-              </div>
+              </motion.div>
             </motion.div>
           ))}
         </AnimatePresence>
 
-        {/* Loading indicator */}
+        {/* Loading indicator with premium styling */}
         {ui.isLoading && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
             className="flex justify-start"
           >
-            <div className="bg-obsidian-800 px-5 py-4 rounded-2xl rounded-bl-md border border-white/10 shadow-lg shadow-black/20">
-              <div className="flex gap-1.5">
-                <span className="w-2 h-2 bg-bmw-blue rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-2 h-2 bg-bmw-blue rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-2 h-2 bg-bmw-blue rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div className="flex-shrink-0 w-8 h-8 mr-3 mt-1 bg-gradient-to-br from-bmw-blue/20 to-bmw-blue-dark/20 rounded-lg flex items-center justify-center border border-bmw-blue/30">
+              <SparklesIcon />
+            </div>
+            <div className="bg-obsidian-800/80 px-5 py-4 rounded-2xl rounded-bl-md border border-white/10 shadow-xl shadow-black/30 backdrop-blur-sm">
+              <div className="flex gap-2 items-center">
+                <motion.span
+                  className="w-2 h-2 bg-gradient-to-r from-bmw-blue to-bmw-blue-light rounded-full"
+                  animate={{
+                    scale: [1, 1.3, 1],
+                    opacity: [1, 0.5, 1],
+                  }}
+                  transition={{
+                    duration: 1,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                    delay: 0,
+                  }}
+                />
+                <motion.span
+                  className="w-2 h-2 bg-gradient-to-r from-bmw-blue to-bmw-blue-light rounded-full"
+                  animate={{
+                    scale: [1, 1.3, 1],
+                    opacity: [1, 0.5, 1],
+                  }}
+                  transition={{
+                    duration: 1,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                    delay: 0.2,
+                  }}
+                />
+                <motion.span
+                  className="w-2 h-2 bg-gradient-to-r from-bmw-blue to-bmw-blue-light rounded-full"
+                  animate={{
+                    scale: [1, 1.3, 1],
+                    opacity: [1, 0.5, 1],
+                  }}
+                  transition={{
+                    duration: 1,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                    delay: 0.4,
+                  }}
+                />
               </div>
             </div>
           </motion.div>
         )}
 
-        {/* Interim voice transcript */}
+        {/* Interim voice transcript with premium styling */}
         {isListening && interimTranscript && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
             className="flex justify-end"
           >
-            <div className="bg-obsidian-700 text-obsidian-300 px-4 py-2 rounded-2xl rounded-br-md text-sm italic">
+            <motion.div
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+              className="bg-gradient-to-br from-obsidian-700 to-obsidian-800 text-obsidian-300 px-5 py-3 rounded-2xl rounded-br-md text-sm italic border border-white/5 shadow-lg"
+            >
               {interimTranscript}...
-            </div>
+            </motion.div>
           </motion.div>
         )}
 
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Quick Actions */}
-      <div className="px-6 py-4 flex gap-2.5 overflow-x-auto border-t border-white/5">
-        {['Zeig mir die Farben', 'Felgen ändern', 'Standard Felgen'].map((action) => (
-          <button
-            key={action}
-            onClick={() => handleSubmit(action)}
-            disabled={ui.isLoading}
-            className="px-4 py-2.5 text-xs font-medium font-body text-obsidian-300 bg-obsidian-800/50
-                       rounded-lg border border-white/10 hover:border-bmw-blue/50 hover:bg-obsidian-700
-                       hover:text-white transition-all whitespace-nowrap
-                       disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-          >
-            {action}
-          </button>
-        ))}
+      {/* Quick Actions with Premium Polish */}
+      <div className="px-6 py-4 border-t border-white/5 bg-obsidian-900/20">
+        <div className="flex items-center gap-2 mb-3">
+          <LightningIcon />
+          <span className="text-[10px] font-semibold text-obsidian-500 uppercase tracking-wider">
+            Schnellaktionen
+          </span>
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          {['Zeig mir die Farben', 'Felgen ändern', 'Standard Felgen'].map((action) => (
+            <motion.button
+              key={action}
+              onClick={() => handleSubmit(action)}
+              disabled={ui.isLoading}
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative px-4 py-2.5 text-xs font-medium font-body text-obsidian-300
+                         bg-obsidian-800/60 rounded-xl border border-white/10
+                         hover:bg-gradient-to-br hover:from-bmw-blue/10 hover:to-bmw-blue-dark/10
+                         hover:border-bmw-blue/40 hover:text-white hover:shadow-lg hover:shadow-bmw-blue/10
+                         transition-all duration-300 whitespace-nowrap
+                         disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm
+                         overflow-hidden"
+            >
+              {/* Shine effect on hover */}
+              <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+              <span className="relative">{action}</span>
+            </motion.button>
+          ))}
+        </div>
       </div>
 
-      {/* Input */}
-      <form onSubmit={onFormSubmit} className="px-6 py-5 border-t border-white/10 bg-obsidian-900/30">
-        <div className="flex gap-3">
-          <div className="flex-1 relative">
+      {/* Premium Input Section */}
+      <form onSubmit={onFormSubmit} className="relative px-6 py-5 border-t border-white/10 bg-gradient-to-b from-obsidian-900/40 to-obsidian-950/60">
+        {/* Subtle top gradient accent */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+        <div className="flex gap-3 items-end">
+          <div className="flex-1 relative group">
+            {/* Input field with enhanced styling */}
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={isListening ? 'Sprechen Sie...' : 'Nachricht eingeben...'}
               disabled={ui.isLoading || isListening}
-              className="w-full px-4 py-3 bg-obsidian-800 border border-white/10 rounded-xl
+              className="w-full px-5 py-3.5 bg-obsidian-800/60 border border-white/10 rounded-2xl
                          text-obsidian-100 placeholder-obsidian-500 font-body text-sm
-                         focus:outline-none focus:border-bmw-blue/50 focus:ring-1 focus:ring-bmw-blue/30
-                         disabled:opacity-50 transition-all"
+                         focus:outline-none focus:border-bmw-blue/50 focus:ring-2 focus:ring-bmw-blue/20
+                         focus:bg-obsidian-800/80 focus:shadow-lg focus:shadow-bmw-blue/10
+                         disabled:opacity-50 transition-all duration-300 backdrop-blur-sm
+                         group-hover:border-white/20"
             />
+
+            {/* Character counter or status indicator */}
+            {input.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-obsidian-500 font-medium"
+              >
+                {input.length}
+              </motion.div>
+            )}
           </div>
 
-          {/* Voice Button */}
+          {/* Voice Button with Premium Styling */}
           {voiceSupported && (
-            <button
+            <motion.button
               type="button"
               onClick={toggleListening}
               disabled={ui.isLoading}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               className={`
-                p-3 rounded-xl transition-all
+                relative p-3.5 rounded-2xl transition-all duration-300 shadow-lg overflow-hidden
                 ${isListening
-                  ? 'bg-red-500 text-white voice-recording'
-                  : 'bg-obsidian-800 text-obsidian-300 hover:text-white hover:bg-obsidian-700 border border-white/10'
+                  ? 'bg-gradient-to-br from-red-500 to-red-600 text-white shadow-red-500/30 voice-recording'
+                  : 'bg-obsidian-800/80 text-obsidian-300 hover:text-white hover:bg-obsidian-700 border border-white/10 hover:border-white/20 hover:shadow-xl backdrop-blur-sm'
                 }
                 disabled:opacity-50 disabled:cursor-not-allowed
               `}
             >
               {isListening ? <StopIcon /> : <MicIcon />}
-            </button>
+
+              {/* Pulsing ring when listening */}
+              {isListening && (
+                <motion.span
+                  className="absolute inset-0 rounded-2xl border-2 border-red-400"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.5, 0, 0.5],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
+                />
+              )}
+            </motion.button>
           )}
 
-          {/* Send Button */}
-          <button
+          {/* Send Button with Enhanced Glow */}
+          <motion.button
             type="submit"
             disabled={!input.trim() || ui.isLoading}
-            className="p-3 bg-bmw-blue text-white rounded-xl hover:bg-bmw-blue-dark
-                       disabled:opacity-50 disabled:cursor-not-allowed transition-all
-                       glow-blue"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="relative p-3.5 bg-gradient-to-br from-bmw-blue to-bmw-blue-dark text-white rounded-2xl
+                       hover:from-bmw-blue-light hover:to-bmw-blue
+                       disabled:opacity-50 disabled:cursor-not-allowed
+                       transition-all duration-300 shadow-lg shadow-bmw-blue/30
+                       hover:shadow-xl hover:shadow-bmw-blue/50
+                       overflow-hidden group"
           >
-            <SendIcon />
-          </button>
+            {/* Animated gradient overlay on hover */}
+            <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-white/10 to-transparent" />
+
+            <motion.div
+              animate={ui.isLoading ? {
+                rotate: 360,
+              } : {}}
+              transition={{
+                duration: 1,
+                repeat: ui.isLoading ? Infinity : 0,
+                ease: 'linear',
+              }}
+            >
+              <SendIcon />
+            </motion.div>
+          </motion.button>
         </div>
+
+        {/* Input hint text */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="mt-3 text-[10px] text-obsidian-600 text-center font-medium"
+        >
+          Drücken Sie Enter zum Senden {voiceSupported && '• Klicken Sie auf das Mikrofon für Spracheingabe'}
+        </motion.p>
       </form>
     </motion.div>
   );
@@ -331,25 +510,37 @@ function MessageContent({ content }: { content: string }) {
       {sections.map((section, idx) => {
         if (section.type === 'list') {
           return (
-            <ul key={idx} className="space-y-2 ml-1">
+            <ul key={idx} className="space-y-2.5 ml-0.5">
               {section.content.map((item, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <span className="text-bmw-blue mt-1 flex-shrink-0">•</span>
+                <motion.li
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="flex items-start gap-3 group"
+                >
+                  <span className="text-bmw-blue mt-1 flex-shrink-0 text-xs group-hover:scale-125 transition-transform duration-200">•</span>
                   <span className="flex-1">
                     <FormattedText text={item} />
                   </span>
-                </li>
+                </motion.li>
               ))}
             </ul>
           );
         }
 
         return (
-          <div key={idx} className="space-y-2">
+          <div key={idx} className="space-y-2.5">
             {section.content.map((text, i) => (
-              <p key={i} className="leading-relaxed">
+              <motion.p
+                key={i}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: i * 0.03 }}
+                className="leading-relaxed"
+              >
                 <FormattedText text={text} />
-              </p>
+              </motion.p>
             ))}
           </div>
         );
@@ -358,7 +549,7 @@ function MessageContent({ content }: { content: string }) {
   );
 }
 
-// Helper component for formatting bold text and emojis
+// Helper component for formatting bold text with premium styling
 function FormattedText({ text }: { text: string }) {
   const parts = text.split(/(\*\*.*?\*\*)/g);
 
@@ -367,7 +558,7 @@ function FormattedText({ text }: { text: string }) {
       {parts.map((part, i) => {
         if (part.startsWith('**') && part.endsWith('**')) {
           return (
-            <strong key={i} className="font-semibold text-white">
+            <strong key={i} className="font-semibold text-white bg-bmw-blue/10 px-1 py-0.5 rounded">
               {part.slice(2, -2)}
             </strong>
           );

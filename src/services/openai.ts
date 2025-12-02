@@ -210,6 +210,7 @@ export async function sendMessageToOpenAI(
   conversationHistory: Array<{ role: 'user' | 'assistant'; content: string }>
 ): Promise<OpenAIResponse> {
   if (!API_KEY) {
+    console.warn('⚠️ No OpenAI API key found - falling back to demo mode');
     return handleDemoMode(userMessage, currentConfig);
   }
 
@@ -242,6 +243,8 @@ Wenn der Kunde etwas anfragt, das nicht für den M5 verfügbar ist, erkläre:
       { role: 'user', content: configContext + '\n\nKunde: ' + userMessage },
     ];
 
+    console.log('📤 Sending request to OpenAI GPT-4o with function calling...');
+
     // Call OpenAI with function calling
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
@@ -255,29 +258,68 @@ Wenn der Kunde etwas anfragt, das nicht für den M5 verfügbar ist, erkläre:
     const message = response.choices[0]?.message;
     const functionCalls: OpenAIResponse['functionCalls'] = [];
 
+    console.log('📥 Received response from OpenAI');
+
     // Extract function calls
-    if (message.tool_calls) {
+    if (message.tool_calls && message.tool_calls.length > 0) {
+      console.log(`🔧 Processing ${message.tool_calls.length} function call(s)...`);
+
       for (const toolCall of message.tool_calls) {
         if (toolCall.type === 'function') {
           try {
             const args = JSON.parse(toolCall.function.arguments);
+            console.log(`  ✅ Function: ${toolCall.function.name}`, args);
             functionCalls.push({
               name: toolCall.function.name,
               args,
             });
           } catch (e) {
-            console.error('Error parsing function arguments:', e);
+            console.error('❌ Error parsing function arguments:', e);
           }
         }
+      }
+    } else {
+      console.log('ℹ️ No function calls in response');
+    }
+
+    // If we need a response but got function calls without text, generate a response
+    let responseText = message.content || '';
+
+    // If there are function calls but no message content, provide default acknowledgment
+    if (!responseText && functionCalls.length > 0) {
+      const functionName = functionCalls[0].name;
+      if (functionName === 'change_color') {
+        const colorId = functionCalls[0].args.colorId;
+        const color = AVAILABLE_COLORS.find(c => c.id === colorId);
+        responseText = color ? `Ich ändere die Farbe auf ${color.name}.` : 'Farbe wird geändert.';
+      } else if (functionName === 'change_wheels') {
+        const wheelId = functionCalls[0].args.wheelId;
+        const wheel = AVAILABLE_WHEELS.find(w => w.id === wheelId);
+        responseText = wheel ? `Ich ändere die Felgen auf ${wheel.name}.` : 'Felgen werden geändert.';
+      } else if (functionName === 'move_camera') {
+        responseText = 'Die Ansicht wird geändert.';
+      } else {
+        responseText = 'Konfiguration wird aktualisiert.';
       }
     }
 
     return {
-      message: message.content || 'Entschuldigung, ich konnte Ihre Anfrage nicht verarbeiten.',
+      message: responseText || 'Entschuldigung, ich konnte Ihre Anfrage nicht verarbeiten.',
       functionCalls,
     };
-  } catch (error) {
-    console.error('OpenAI API error:', error);
+  } catch (error: any) {
+    console.error('❌ OpenAI API error:', error);
+    console.error('Error details:', error?.message || 'Unknown error');
+
+    // Check for specific error types
+    if (error?.status === 401) {
+      console.error('🔑 Authentication error - check your API key');
+    } else if (error?.status === 429) {
+      console.error('⏱️ Rate limit exceeded');
+    } else if (error?.status === 500) {
+      console.error('🔥 OpenAI server error');
+    }
+
     return handleDemoMode(userMessage, currentConfig);
   }
 }
@@ -288,6 +330,8 @@ Wenn der Kunde etwas anfragt, das nicht für den M5 verfügbar ist, erkläre:
 
 function handleDemoMode(userMessage: string, currentConfig: CarConfig): OpenAIResponse {
   const lowerMessage = userMessage.toLowerCase();
+
+  console.log('🎮 Demo mode active - processing message:', userMessage);
 
   // Color changes
   if (lowerMessage.includes('farbe') || lowerMessage.includes('color')) {
@@ -300,11 +344,19 @@ function handleDemoMode(userMessage: string, currentConfig: CarConfig): OpenAIRe
       };
     }
 
+    // Try to match color by name
     const requestedColor = AVAILABLE_COLORS.find(c =>
-      lowerMessage.includes(c.name.toLowerCase())
+      lowerMessage.includes(c.name.toLowerCase()) ||
+      lowerMessage.includes(c.id.toLowerCase()) ||
+      (c.name.includes('Blau') && (lowerMessage.includes('blau') || lowerMessage.includes('blue'))) ||
+      (c.name.includes('Schwarz') && (lowerMessage.includes('schwarz') || lowerMessage.includes('black'))) ||
+      (c.name.includes('Grau') && (lowerMessage.includes('grau') || lowerMessage.includes('grey') || lowerMessage.includes('gray'))) ||
+      (c.name.includes('Grün') && (lowerMessage.includes('grün') || lowerMessage.includes('green'))) ||
+      (c.name.includes('Weiß') && (lowerMessage.includes('weiß') || lowerMessage.includes('white')))
     );
 
     if (requestedColor) {
+      console.log('✅ Color change detected:', requestedColor.name);
       return {
         message: `Ich ändere die Farbe auf ${requestedColor.name}.`,
         functionCalls: [{ name: 'change_color', args: { colorId: requestedColor.id } }],
