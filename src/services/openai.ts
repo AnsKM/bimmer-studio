@@ -1,13 +1,12 @@
 /**
  * OpenAI Service for BMW M5 Configuration
  *
- * Uses GPT-5.1 with function calling to handle car configuration
+ * Uses GPT-5.1-2025-11-13 with function calling to handle car configuration
  * and provide intelligent suggestions with validation
  *
  * GPT-5 specific parameters:
- * - reasoning.effort: "none" | "low" | "medium" | "high"
- * - text.verbosity: "low" | "medium" | "high"
- * - max_output_tokens (replaces max_tokens)
+ * - reasoning_effort: "none" | "minimal" | "low" | "medium" | "high" (top-level param)
+ * - max_completion_tokens (replaces max_tokens)
  * - temperature/top_p NOT supported in GPT-5 models
  */
 
@@ -302,16 +301,16 @@ Wenn der Kunde etwas anfragt, das nicht für den M5 verfügbar ist, erkläre:
     console.log('📤 Sending request to OpenAI with function calling...');
 
     // Call OpenAI with function calling
-    // Using gpt-5.1 - the newest flagship model with enhanced reasoning
-    // GPT-5 models don't support temperature/top_p, use reasoning.effort instead
+    // Using gpt-5.1-2025-11-13 - the newest flagship model with enhanced reasoning
+    // GPT-5 models don't support temperature/top_p, use reasoning_effort instead
     const response = await openai.chat.completions.create({
-      model: 'gpt-5.1',
+      model: 'gpt-5.1-2025-11-13',
       messages,
       tools: CONFIGURATION_FUNCTIONS,
       tool_choice: 'auto',
-      // GPT-5 specific parameters
-      reasoning: { effort: 'low' },  // Low effort for fast car config responses
-      max_output_tokens: 800,
+      // GPT-5 specific parameters - reasoning_effort is top-level, not nested
+      reasoning_effort: 'low',  // Low effort for fast car config responses
+      max_completion_tokens: 800,
     } as any);  // Type assertion needed for GPT-5 specific params
 
     const message = response.choices[0]?.message;
