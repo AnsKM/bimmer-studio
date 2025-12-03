@@ -1,15 +1,13 @@
 # Screenshots
 
-Add screenshots here to be referenced in README.md
+All screenshots for README.md are now captured:
 
-Required screenshots:
-- banner.png
-- main-interface.png
-- ai-chat.png
-- validation.png
-- view-front.png
-- view-side.png
-- view-rear.png
-- colors.png
-- voice-input.png
-- validation-states.png
+- banner.png - Full app interface banner
+- main-interface.png - Main UI layout
+- ai-chat.png - Chat conversation with color options
+- validation.png - AI explaining M5 wheel requirements
+- view-front.png - Front camera view
+- view-side.png - Side camera view
+- view-rear.png - Rear camera view
+- colors.png - Portimao Blue color configuration
+- validation-states.png - Validation overlay modal

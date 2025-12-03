@@ -3,7 +3,6 @@
 An intelligent 3D car configurator for the BMW M5, powered by **OpenAI GPT-5.1** and **React Three Fiber**. This demo showcases how AI can intelligently handle **2^40 possible configuration combinations** with real-time 3D visualization and constraint-based validation.
 
 ![BMW M5 Configurator Banner](./screenshots/banner.png)
-<!-- TODO: Add banner screenshot showing the full app interface -->
 
 ---
 
@@ -53,29 +52,20 @@ Enterprise car configurators face the challenge of managing millions of possible
 
 ### Main Interface
 ![Main Interface](./screenshots/main-interface.png)
-<!-- TODO: Screenshot showing the full app with 3D car, chat panel, and config summary -->
 
 ### AI Chat Interaction
 ![AI Chat](./screenshots/ai-chat.png)
-<!-- TODO: Screenshot showing a conversation with color change and AI response -->
 
 ### Configuration Validation
 ![Validation](./screenshots/validation.png)
-<!-- TODO: Screenshot showing validation overlay with blocked/warning states -->
 
 ### 3D Model Views
 | Front View | Side View | Rear View |
 |------------|-----------|-----------|
 | ![Front](./screenshots/view-front.png) | ![Side](./screenshots/view-side.png) | ![Rear](./screenshots/view-rear.png) |
-<!-- TODO: Add view screenshots -->
 
 ### Color Options
 ![Colors](./screenshots/colors.png)
-<!-- TODO: Screenshot showing different color configurations -->
-
-### Voice Input
-![Voice Input](./screenshots/voice-input.png)
-<!-- TODO: Screenshot showing voice recording state -->
 
 ---
 
@@ -410,7 +400,7 @@ bmw-configurator-demo/
 │   └── models/
 │       └── bmw-m5.glb             # 3D BMW M5 model
 │
-├── screenshots/                    # README screenshots (TODO)
+├── screenshots/                    # README screenshots
 │
 ├── .env.example                    # Environment template
 ├── package.json                    # Dependencies
@@ -552,7 +542,6 @@ The BMW M5 has specific configuration requirements enforced by 8 validation rule
 ### Validation Display
 
 ![Validation States](./screenshots/validation-states.png)
-<!-- TODO: Screenshot showing valid (green), warning (yellow), blocked (red) states -->
 
 - **Green Badge** - Configuration is valid and can be ordered
 - **Yellow Badge** - Warnings present but configuration is valid
@@ -773,19 +762,3 @@ Built with:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
----
-
-## Screenshots TODO
-
-Create a `screenshots/` directory and add:
-
-- [ ] `banner.png` - Full app interface banner
-- [ ] `main-interface.png` - Main UI layout
-- [ ] `ai-chat.png` - Chat conversation example
-- [ ] `validation.png` - Validation overlay
-- [ ] `view-front.png` - Front camera view
-- [ ] `view-side.png` - Side camera view
-- [ ] `view-rear.png` - Rear camera view
-- [ ] `colors.png` - Color configuration examples
-- [ ] `voice-input.png` - Voice recording state
-- [ ] `validation-states.png` - Valid/warning/blocked states
