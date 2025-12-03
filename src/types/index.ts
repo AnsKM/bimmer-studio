@@ -19,6 +19,10 @@ export interface CarConfig {
   lights: 'led' | 'laser';
   sound: 'standard' | 'harman-kardon' | 'bowers-wilkins';
   drivingAssistant: 'none' | 'plus' | 'pro';
+
+  // Exterior Styling
+  grillColor: GrillColorOption;
+  hoodPattern: HoodPatternOption;
 }
 
 export interface ColorOption {
@@ -41,6 +45,20 @@ export interface InteriorConfig {
   leather: 'vernasca' | 'merino' | 'extended-merino';
   color: string;
   trim: 'aluminum' | 'wood' | 'carbon';
+}
+
+export interface GrillColorOption {
+  id: string;
+  name: string;
+  hex: string;
+  price: number;
+}
+
+export interface HoodPatternOption {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
 }
 
 // =============================================================================
@@ -106,6 +124,8 @@ export type AIFunctionName =
   | 'change_wheels'
   | 'change_interior'
   | 'change_brakes'
+  | 'change_grill_color'
+  | 'change_hood_pattern'
   | 'add_package'
   | 'remove_package'
   | 'get_price'
@@ -169,4 +189,20 @@ export const TRIM_OPTIONS = [
   { id: 'aluminum', name: 'Aluminium Rhombicle' },
   { id: 'wood', name: 'Edelholz Eiche' },
   { id: 'carbon', name: 'M Carbon' },
+];
+
+export const AVAILABLE_GRILL_COLORS: GrillColorOption[] = [
+  { id: 'chrome', name: 'Chrom', hex: '#C0C0C0', price: 0 },
+  { id: 'black-high-gloss', name: 'Schwarz Hochglanz', hex: '#0a0a0a', price: 350 },
+  { id: 'shadow-line', name: 'Shadow Line', hex: '#1a1a1a', price: 650 },
+  { id: 'cerium-grey', name: 'Cerium Grau', hex: '#5a5a5a', price: 450 },
+  { id: 'gold-bronze', name: 'Gold Bronze', hex: '#8B7355', price: 850 },
+];
+
+export const AVAILABLE_HOOD_PATTERNS: HoodPatternOption[] = [
+  { id: 'standard', name: 'Standard', description: 'Unifarben ohne Muster', price: 0 },
+  { id: 'carbon-fiber', name: 'Carbon Fiber', description: 'Sichtbare Carbonfaser-Optik', price: 2800 },
+  { id: 'm-stripes', name: 'M Streifen', description: 'BMW M Farbstreifen (Blau/Violett/Rot)', price: 450 },
+  { id: 'racing-stripes', name: 'Racing Stripes', description: 'Mittige Rennstreifen in Kontrastfarbe', price: 650 },
+  { id: 'matte-finish', name: 'Matt Finish', description: 'Matte Lackierung für sportlichen Look', price: 1200 },
 ];

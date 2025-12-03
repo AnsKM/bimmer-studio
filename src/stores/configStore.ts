@@ -5,7 +5,7 @@
 import { create } from 'zustand';
 import type { CarConfig, ChatMessage, ValidationResult, UIState, CameraPosition } from '../types';
 import { validateConfiguration } from '../config/constraints';
-import { AVAILABLE_COLORS, AVAILABLE_WHEELS } from '../types';
+import { AVAILABLE_COLORS, AVAILABLE_WHEELS, AVAILABLE_GRILL_COLORS, AVAILABLE_HOOD_PATTERNS } from '../types';
 
 // =============================================================================
 // DEFAULT CONFIGURATION (Valid M5 setup)
@@ -28,6 +28,10 @@ const DEFAULT_CONFIG: CarConfig = {
   lights: 'laser',
   sound: 'harman-kardon',
   drivingAssistant: 'plus',
+
+  // Exterior Styling
+  grillColor: AVAILABLE_GRILL_COLORS.find(g => g.id === 'shadow-line')!,
+  hoodPattern: AVAILABLE_HOOD_PATTERNS.find(h => h.id === 'standard')!,
 };
 
 // =============================================================================
@@ -48,6 +52,8 @@ interface ConfigStore {
   setInterior: (interior: Partial<CarConfig['interior']>) => void;
   setPerformancePackage: (pkg: CarConfig['performancePackage']) => void;
   setBrakes: (brakes: CarConfig['brakes']) => void;
+  setGrillColor: (grillColorId: string) => void;
+  setHoodPattern: (hoodPatternId: string) => void;
   resetConfig: () => void;
 
   // Chat Actions
@@ -157,6 +163,32 @@ export const useConfigStore = create<ConfigStore>((set) => ({
         validationResult: validateConfiguration(newConfig),
       };
     });
+  },
+
+  setGrillColor: (grillColorId) => {
+    const grillColor = AVAILABLE_GRILL_COLORS.find(g => g.id === grillColorId);
+    if (grillColor) {
+      set((state) => {
+        const newConfig = { ...state.config, grillColor };
+        return {
+          config: newConfig,
+          validationResult: validateConfiguration(newConfig),
+        };
+      });
+    }
+  },
+
+  setHoodPattern: (hoodPatternId) => {
+    const hoodPattern = AVAILABLE_HOOD_PATTERNS.find(h => h.id === hoodPatternId);
+    if (hoodPattern) {
+      set((state) => {
+        const newConfig = { ...state.config, hoodPattern };
+        return {
+          config: newConfig,
+          validationResult: validateConfiguration(newConfig),
+        };
+      });
+    }
   },
 
   resetConfig: () => {

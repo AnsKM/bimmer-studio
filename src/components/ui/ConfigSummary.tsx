@@ -78,6 +78,14 @@ export function ConfigSummary() {
         <ConfigItem label="Sound">
           <span className="text-xs text-obsidian-200">{getSoundLabel(config.sound)}</span>
         </ConfigItem>
+
+        <ConfigItem label="Niere">
+          <span className="text-xs text-obsidian-200">{config.grillColor?.name || 'Shadow Line'}</span>
+        </ConfigItem>
+
+        <ConfigItem label="Haube">
+          <span className="text-xs text-obsidian-200">{config.hoodPattern?.name || 'Standard'}</span>
+        </ConfigItem>
       </div>
 
     </motion.div>
