@@ -1,6 +1,7 @@
 @import "tailwindcss";
+@source "./";
 
-/* BMW M5 Configurator Design System - "Precision Luxury" */
+/* BMW M5 Configurator Design System - "Precision Luxury" Updated */
 
 /* Custom Theme Variables */
 @theme {
@@ -41,13 +42,7 @@
   --ease-premium: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Base Styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+/* Base Styles - Note: Tailwind v4 already resets margin/padding/box-sizing in @layer base */
 html, body, #root {
   width: 100%;
   height: 100%;
