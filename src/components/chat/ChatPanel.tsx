@@ -50,7 +50,8 @@ const LightningIcon = () => (
 
 export function ChatPanel() {
   const [input, setInput] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [scrollToUserMessage, setScrollToUserMessage] = useState(0);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     messages,
@@ -81,10 +82,24 @@ export function ChatPanel() {
     },
   });
 
-  // Scroll to bottom on new messages
+  // Scroll to the last user message when triggered
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (scrollToUserMessage > 0 && messagesContainerRef.current) {
+      // Find the last user message
+      const userMessages = messages.filter(m => m.role === 'user');
+      const lastUserMessage = userMessages[userMessages.length - 1];
+
+      if (lastUserMessage) {
+        // Small delay to ensure DOM is updated
+        setTimeout(() => {
+          const userMessageElement = document.getElementById(`message-${lastUserMessage.id}`);
+          if (userMessageElement) {
+            userMessageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+      }
+    }
+  }, [scrollToUserMessage, messages]);
 
   // Handle message submission
   const handleSubmit = useCallback(async (messageText?: string) => {
@@ -97,6 +112,9 @@ export function ChatPanel() {
     // Add user message
     addMessage({ role: 'user', content: text });
     conversationHistory.current.push({ role: 'user', content: text });
+
+    // Trigger scroll to user message (at top of view)
+    setScrollToUserMessage(prev => prev + 1);
 
     try {
       // Get AI response from OpenAI
@@ -199,16 +217,17 @@ export function ChatPanel() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-5">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-6 space-y-5">
         <AnimatePresence mode="popLayout">
           {messages.map((message) => (
             <motion.div
               key={message.id}
+              id={`message-${message.id}`}
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} scroll-mt-6`}
             >
               {message.role === 'assistant' && (
                 <motion.div
@@ -310,8 +329,6 @@ export function ChatPanel() {
             </motion.div>
           </motion.div>
         )}
-
-        <div ref={messagesEndRef} />
       </div>
 
       {/* Quick Actions with Premium Polish */}
