@@ -101,8 +101,10 @@ async function testOpenAI() {
     console.log('─'.repeat(60));
 
     try {
+      // Using gpt-5.1 - newest flagship model
+      // GPT-5 models don't support temperature/top_p, use reasoning.effort instead
       const response = await openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-5.1',
         messages: [
           {
             role: 'system',
@@ -121,8 +123,9 @@ VERFÜGBARE FELGEN: M Doppelspeiche 20", M Sternspeiche 21", M Y-Speiche 21", M 
         ],
         tools: CONFIGURATION_FUNCTIONS,
         tool_choice: 'auto',
-        temperature: 0.7,
-        max_tokens: 500,
+        // GPT-5 specific parameters
+        reasoning: { effort: 'low' },
+        max_output_tokens: 500,
       });
 
       const message = response.choices[0]?.message;

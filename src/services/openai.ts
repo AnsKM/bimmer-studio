@@ -1,8 +1,14 @@
 /**
  * OpenAI Service for BMW M5 Configuration
  *
- * Uses GPT-4o with function calling to handle car configuration
+ * Uses GPT-5.1 with function calling to handle car configuration
  * and provide intelligent suggestions with validation
+ *
+ * GPT-5 specific parameters:
+ * - reasoning.effort: "none" | "low" | "medium" | "high"
+ * - text.verbosity: "low" | "medium" | "high"
+ * - max_output_tokens (replaces max_tokens)
+ * - temperature/top_p NOT supported in GPT-5 models
  */
 
 import OpenAI from 'openai';
@@ -296,15 +302,17 @@ Wenn der Kunde etwas anfragt, das nicht für den M5 verfügbar ist, erkläre:
     console.log('📤 Sending request to OpenAI with function calling...');
 
     // Call OpenAI with function calling
-    // Using gpt-4o for best function calling performance and latest features
+    // Using gpt-5.1 - the newest flagship model with enhanced reasoning
+    // GPT-5 models don't support temperature/top_p, use reasoning.effort instead
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-5.1',
       messages,
       tools: CONFIGURATION_FUNCTIONS,
       tool_choice: 'auto',
-      temperature: 0.7,
-      max_tokens: 800,
-    });
+      // GPT-5 specific parameters
+      reasoning: { effort: 'low' },  // Low effort for fast car config responses
+      max_output_tokens: 800,
+    } as any);  // Type assertion needed for GPT-5 specific params
 
     const message = response.choices[0]?.message;
     const functionCalls: OpenAIResponse['functionCalls'] = [];
