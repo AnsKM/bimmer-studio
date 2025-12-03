@@ -1,14 +1,14 @@
 /**
  * OpenAI Service for BMW M5 Configuration
  *
- * Uses GPT-5.1 with function calling to handle car configuration
+ * Uses GPT-4o with function calling to handle car configuration
  * and provide intelligent suggestions with validation
  */
 
 import OpenAI from 'openai';
 import type { CarConfig } from '../types';
 import { validateConfiguration, getValidationExplanation } from '../config/constraints';
-import { AVAILABLE_COLORS, AVAILABLE_WHEELS, AVAILABLE_GRILL_COLORS, AVAILABLE_HOOD_PATTERNS } from '../types';
+import { AVAILABLE_COLORS, AVAILABLE_WHEELS, AVAILABLE_GRILL_COLORS, AVAILABLE_HOOD_PATTERNS, INTERIOR_COLORS } from '../types';
 
 // =============================================================================
 // CONFIGURATION
@@ -27,6 +27,13 @@ const openai = new OpenAI({
 
 const SYSTEM_PROMPT = `Du bist der BMW M5 KI-Konfigurator Assistent. Du hilfst Kunden dabei, ihren BMW M5 zu konfigurieren.
 
+WICHTIG - GESPRÄCHSKONTEXT:
+- Du MUSST den Kontext der vorherigen Nachrichten berücksichtigen!
+- Wenn der Kunde zuletzt über INTERIEUR/INNENRAUM sprach und dann "weiß" oder eine andere Farbe sagt, bezieht sich das auf das INTERIEUR, NICHT auf die Außenfarbe!
+- Wenn der Kunde "nein" sagt und eine Alternative nennt, bezieht sich das auf das GLEICHE Thema wie zuvor
+- Analysiere IMMER die vorherigen Nachrichten, um den Kontext zu verstehen
+- Beispiel: "Ändere Interieur auf braun" -> "Nein, weiß" = INTERIEUR weiß, nicht Außenfarbe!
+
 WICHTIG - VALIDIERUNGSLOGIK:
 - Der BMW M5 ist ein Hochleistungsfahrzeug mit spezifischen Anforderungen
 - STANDARD-ALUFELGEN SIND NICHT FÜR DEN M5 VERFÜGBAR - nur M Sport oder M Performance Felgen
@@ -35,7 +42,7 @@ WICHTIG - VALIDIERUNGSLOGIK:
 - Frozen Lackierungen sind exklusiv für den M5
 
 DEINE AUFGABE:
-1. Verstehe die Konfigurationswünsche des Kunden
+1. Verstehe die Konfigurationswünsche des Kunden IM KONTEXT der vorherigen Nachrichten
 2. Nutze die verfügbaren Funktionen, um Änderungen durchzuführen
 3. VALIDIERE IMMER die Konfiguration nach Änderungen
 4. Wenn eine Konfiguration NICHT für den M5 möglich ist, erkläre:
@@ -55,7 +62,8 @@ KOMMUNIKATIONSSTIL:
 - Bei ungültigen Konfigurationen: Erkläre WARUM + nenne die 4 M5 VORTEILE
 - Schlage passende Alternativen vor
 
-VERFÜGBARE FARBEN: ${AVAILABLE_COLORS.map(c => c.name).join(', ')}
+VERFÜGBARE AUSSENFARBEN: ${AVAILABLE_COLORS.map(c => c.name).join(', ')}
+VERFÜGBARE INTERIEURFARBEN: ${INTERIOR_COLORS.map(c => c.name).join(', ')}
 VERFÜGBARE FELGEN: ${AVAILABLE_WHEELS.filter(w => w.type !== 'standard').map(w => w.name).join(', ')}`;
 
 // =============================================================================
@@ -103,7 +111,7 @@ const CONFIGURATION_FUNCTIONS: OpenAI.Chat.ChatCompletionTool[] = [
     type: 'function',
     function: {
       name: 'change_interior',
-      description: 'Ändert die Innenausstattung des Fahrzeugs',
+      description: 'Ändert die Innenausstattung des Fahrzeugs (Leder, Farbe der Sitze, Zierleisten). WICHTIG: Nutze diese Funktion wenn der Kunde über Interieur, Innenraum, Sitze, oder Leder spricht!',
       parameters: {
         type: 'object',
         properties: {
@@ -114,7 +122,8 @@ const CONFIGURATION_FUNCTIONS: OpenAI.Chat.ChatCompletionTool[] = [
           },
           color: {
             type: 'string',
-            description: 'Farbe des Interieurs',
+            enum: INTERIOR_COLORS.map(c => c.name),
+            description: 'Farbe des Interieurs/Sitze - verfügbare Farben: Schwarz, Cognac, Silverstone, Fiona Rot, Elfenbeinweiß, Alpinweiß',
           },
           trim: {
             type: 'string',
@@ -247,8 +256,13 @@ export async function sendMessageToOpenAI(
 ): Promise<OpenAIResponse> {
   if (!API_KEY) {
     console.warn('⚠️ No OpenAI API key found - falling back to demo mode');
-    return handleDemoMode(userMessage, currentConfig);
+    console.warn('Set VITE_OPENAI_API_KEY in your .env file to enable real AI chat');
+    return handleDemoMode(userMessage, currentConfig, conversationHistory);
   }
+
+  console.log('✅ OpenAI API key detected - using real LLM');
+  console.log(`📝 User message: "${userMessage}"`);
+  console.log(`💬 Conversation history: ${conversationHistory.length} messages`);
 
   try {
     // Build context with current configuration
@@ -279,11 +293,12 @@ Wenn der Kunde etwas anfragt, das nicht für den M5 verfügbar ist, erkläre:
       { role: 'user', content: configContext + '\n\nKunde: ' + userMessage },
     ];
 
-    console.log('📤 Sending request to OpenAI GPT-5.1 with function calling...');
+    console.log('📤 Sending request to OpenAI with function calling...');
 
     // Call OpenAI with function calling
+    // Using gpt-4o for best function calling performance and latest features
     const response = await openai.chat.completions.create({
-      model: 'gpt-5.1',
+      model: 'gpt-4o',
       messages,
       tools: CONFIGURATION_FUNCTIONS,
       tool_choice: 'auto',
@@ -350,13 +365,22 @@ Wenn der Kunde etwas anfragt, das nicht für den M5 verfügbar ist, erkläre:
     // Check for specific error types
     if (error?.status === 401) {
       console.error('🔑 Authentication error - check your API key');
+      throw new Error('OpenAI API authentication failed. Please check your API key.');
     } else if (error?.status === 429) {
       console.error('⏱️ Rate limit exceeded');
+      throw new Error('OpenAI API rate limit exceeded. Please try again later.');
     } else if (error?.status === 500) {
       console.error('🔥 OpenAI server error');
+      throw new Error('OpenAI server error. Please try again.');
+    } else if (error?.status === 400) {
+      console.error('⚠️ Bad request - check model name and parameters');
+      console.error('Full error:', JSON.stringify(error, null, 2));
+      throw new Error('Invalid request to OpenAI API. Please check console for details.');
     }
 
-    return handleDemoMode(userMessage, currentConfig);
+    // For other errors, provide informative message but don't fail completely
+    console.warn('⚠️ Falling back to demo mode due to API error');
+    return handleDemoMode(userMessage, currentConfig, conversationHistory);
   }
 }
 
@@ -364,7 +388,14 @@ Wenn der Kunde etwas anfragt, das nicht für den M5 verfügbar ist, erkläre:
 // DEMO MODE (without API key)
 // =============================================================================
 
-function handleDemoMode(userMessage: string, currentConfig: CarConfig): OpenAIResponse {
+// Track the last topic for context-aware follow-ups
+let lastConversationTopic: 'exterior' | 'interior' | 'wheels' | 'brakes' | 'grill' | 'hood' | 'general' = 'general';
+
+function handleDemoMode(
+  userMessage: string,
+  currentConfig: CarConfig,
+  conversationHistory: Array<{ role: 'user' | 'assistant'; content: string }> = []
+): OpenAIResponse {
   const lowerMessage = userMessage.toLowerCase();
   // Normalize German characters
   const normalizedMessage = lowerMessage
@@ -374,6 +405,59 @@ function handleDemoMode(userMessage: string, currentConfig: CarConfig): OpenAIRe
     .replace(/ü/g, 'ue');
 
   console.log('🎮 Demo mode active - processing message:', userMessage);
+  console.log('📝 Last conversation topic:', lastConversationTopic);
+
+  // ==========================================================================
+  // CONTEXT-AWARE FOLLOW-UP DETECTION
+  // Check if this is a follow-up message (starts with "nein", just a color, etc.)
+  // ==========================================================================
+  const isFollowUp = lowerMessage.startsWith('nein') ||
+                     lowerMessage.startsWith('ne ') ||
+                     lowerMessage.startsWith('doch') ||
+                     lowerMessage.match(/^(ich will|ich möchte|lieber|aber)\s/i) ||
+                     (!lowerMessage.includes('farbe') && !lowerMessage.includes('felge') && !lowerMessage.includes('interieur'));
+
+  // If it's a follow-up about interior colors
+  if (isFollowUp && lastConversationTopic === 'interior') {
+    // Check for interior color in the follow-up
+    if (lowerMessage.includes('weiß') || lowerMessage.includes('weiss') || lowerMessage.includes('white') || lowerMessage.includes('alpin')) {
+      console.log('✅ Follow-up detected: Interior white color');
+      return {
+        message: 'Ausgezeichnete Wahl! Ich ändere die Interieurfarbe auf **Alpinweiß**. Elegant und modern!',
+        functionCalls: [{ name: 'change_interior', args: { color: 'Alpinweiß' } }],
+      };
+    }
+    if (lowerMessage.includes('elfenbein') || lowerMessage.includes('ivory')) {
+      return {
+        message: 'Ich ändere die Interieurfarbe auf **Elfenbeinweiß**. Klassisch und luxuriös!',
+        functionCalls: [{ name: 'change_interior', args: { color: 'Elfenbeinweiß' } }],
+      };
+    }
+    if (lowerMessage.includes('schwarz') || lowerMessage.includes('black')) {
+      return {
+        message: 'Ich ändere die Interieurfarbe auf **Schwarz**. Elegant und zeitlos!',
+        functionCalls: [{ name: 'change_interior', args: { color: 'Schwarz' } }],
+      };
+    }
+    if (lowerMessage.includes('cognac') || lowerMessage.includes('braun') || lowerMessage.includes('brown')) {
+      return {
+        message: 'Ich ändere die Interieurfarbe auf **Cognac**. Luxuriös und warm!',
+        functionCalls: [{ name: 'change_interior', args: { color: 'Cognac' } }],
+      };
+    }
+    if (lowerMessage.includes('silverstone') || lowerMessage.includes('silber') || lowerMessage.includes('grau')) {
+      return {
+        message: 'Ich ändere die Interieurfarbe auf **Silverstone**. Modern und elegant!',
+        functionCalls: [{ name: 'change_interior', args: { color: 'Silverstone' } }],
+      };
+    }
+    if (lowerMessage.includes('rot') || lowerMessage.includes('red') || lowerMessage.includes('fiona')) {
+      return {
+        message: 'Ich ändere die Interieurfarbe auf **Fiona Rot**. Sportlich und ausdrucksstark!',
+        functionCalls: [{ name: 'change_interior', args: { color: 'Fiona Rot' } }],
+      };
+    }
+  }
 
   // ==========================================================================
   // DIRECT COLOR MATCHING (check FIRST, before keyword check)
@@ -401,9 +485,10 @@ function handleDemoMode(userMessage: string, currentConfig: CarConfig): OpenAIRe
   });
 
   if (matchedColor) {
-    console.log('✅ Direct color match:', matchedColor.name);
+    console.log('✅ Direct exterior color match:', matchedColor.name);
+    lastConversationTopic = 'exterior';
     return {
-      message: `Ausgezeichnete Wahl! Ich ändere die Farbe auf **${matchedColor.name}**. ${matchedColor.type === 'frozen' ? 'Dies ist eine exklusive BMW Individual Lackierung.' : ''}`,
+      message: `Ausgezeichnete Wahl! Ich ändere die Außenfarbe auf **${matchedColor.name}**. ${matchedColor.type === 'frozen' ? 'Dies ist eine exklusive BMW Individual Lackierung.' : ''}`,
       functionCalls: [{ name: 'change_color', args: { colorId: matchedColor.id } }],
     };
   }
@@ -435,9 +520,15 @@ function handleDemoMode(userMessage: string, currentConfig: CarConfig): OpenAIRe
   // COLOR COMMANDS (show colors, etc.)
   // ==========================================================================
   if (lowerMessage.includes('farbe') || lowerMessage.includes('color') || lowerMessage.includes('lackierung')) {
+    // Set topic based on whether it's interior or exterior
+    if (!lowerMessage.includes('innen') && !lowerMessage.includes('interieur') && !lowerMessage.includes('sitz')) {
+      lastConversationTopic = 'exterior';
+      console.log('🏷️ Setting topic to: exterior (color command)');
+    }
+
     if (lowerMessage.includes('zeig') || lowerMessage.includes('welche') || lowerMessage.includes('verfügbar') || lowerMessage.includes('optionen')) {
       return {
-        message: `Hier sind die verfügbaren Farben für Ihren M5:\n\n**Solid (ohne Aufpreis):**\n• Alpinweiß\n• Schwarz\n\n**Metallic:**\n• Saphirschwarz Metallic\n• Brooklyn Grau Metallic\n• Portimao Blau Metallic\n• Isle of Man Grün Metallic\n\n**BMW Individual:**\n• Frozen Deep Grey\n• Frozen Marina Bay Blau\n\nWelche Farbe interessiert Sie?`,
+        message: `Hier sind die verfügbaren **Außenfarben** für Ihren M5:\n\n**Solid (ohne Aufpreis):**\n• Alpinweiß\n• Schwarz\n\n**Metallic:**\n• Saphirschwarz Metallic\n• Brooklyn Grau Metallic\n• Portimao Blau Metallic\n• Isle of Man Grün Metallic\n\n**BMW Individual:**\n• Frozen Deep Grey\n• Frozen Marina Bay Blau\n\nWelche Farbe interessiert Sie?`,
         functionCalls: [],
       };
     }
@@ -483,7 +574,23 @@ Welche M Felgen interessieren Sie?`,
   // INTERIOR COMMANDS
   // ==========================================================================
   if (lowerMessage.includes('interieur') || lowerMessage.includes('interior') || lowerMessage.includes('innen') || lowerMessage.includes('sitz') || lowerMessage.includes('leder') || lowerMessage.includes('leather')) {
-    // Interior color changes
+    // Set topic for follow-up context
+    lastConversationTopic = 'interior';
+    console.log('🏷️ Setting topic to: interior');
+
+    // Interior color changes - including white options
+    if (lowerMessage.includes('weiß') || lowerMessage.includes('weiss') || lowerMessage.includes('white') || lowerMessage.includes('alpin')) {
+      return {
+        message: 'Ich ändere die Interieurfarbe auf **Alpinweiß**. Elegant und modern!',
+        functionCalls: [{ name: 'change_interior', args: { color: 'Alpinweiß' } }],
+      };
+    }
+    if (lowerMessage.includes('elfenbein') || lowerMessage.includes('ivory')) {
+      return {
+        message: 'Ich ändere die Interieurfarbe auf **Elfenbeinweiß**. Klassisch und luxuriös!',
+        functionCalls: [{ name: 'change_interior', args: { color: 'Elfenbeinweiß' } }],
+      };
+    }
     if (lowerMessage.includes('schwarz') || lowerMessage.includes('black')) {
       return {
         message: 'Ich ändere die Interieurfarbe auf **Schwarz**. Elegant und zeitlos!',
@@ -546,7 +653,7 @@ Welche M Felgen interessieren Sie?`,
 
     // Show interior options
     return {
-      message: `Hier sind die Interieur-Optionen für Ihren M5:\n\n**Lederarten:**\n• Vernasca Leder\n• Merino Leder\n• Extended Merino Leder (M5 exklusiv)\n\n**Farben:**\n• Schwarz\n• Cognac\n• Silverstone\n• Fiona Rot\n\n**Zierleisten:**\n• Aluminium Rhombicle\n• Edelholz Eiche\n• M Carbon\n\nWas möchten Sie ändern?`,
+      message: `Hier sind die Interieur-Optionen für Ihren M5:\n\n**Lederarten:**\n• Vernasca Leder\n• Merino Leder\n• Extended Merino Leder (M5 exklusiv)\n\n**Farben:**\n• Schwarz\n• Cognac\n• Silverstone\n• Fiona Rot\n• Elfenbeinweiß\n• Alpinweiß\n\n**Zierleisten:**\n• Aluminium Rhombicle\n• Edelholz Eiche\n• M Carbon\n\nWas möchten Sie ändern?`,
       functionCalls: [{ name: 'move_camera', args: { position: 'interior' } }],
     };
   }

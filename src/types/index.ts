@@ -183,6 +183,8 @@ export const INTERIOR_COLORS = [
   { id: 'cognac', name: 'Cognac' },
   { id: 'silverstone', name: 'Silverstone' },
   { id: 'fiona-red', name: 'Fiona Rot' },
+  { id: 'ivory-white', name: 'Elfenbeinweiß' },
+  { id: 'alpine-white', name: 'Alpinweiß' },
 ];
 
 export const TRIM_OPTIONS = [
